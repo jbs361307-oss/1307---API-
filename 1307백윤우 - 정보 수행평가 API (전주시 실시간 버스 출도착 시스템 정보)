@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>전주시 실시간 버스 출도착 정보</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Pretendard','Malgun Gothic',sans-serif;
+    background:#f3f5f9;
+    color:#111;
+}
+
+header{
+    background:white;
+    padding:14px 32px;
+    border-bottom:1px solid #e8edf5;
+    position:sticky;
+    top:0;
+    z-index:10;
+    backdrop-filter:blur(12px);
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    font-size:15px;
+    font-weight:900;
+}
+
+.logo-icon{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#ff5b7f,#ff9bb4);
+    box-shadow:0 4px 14px rgba(255,91,127,0.3);
+}
+
+.container{
+    max-width:1080px;
+    margin:36px auto;
+    padding:0 20px;
+}
+
+.hero{
+    background:white;
+    border-radius:18px;
+    padding:38px;
+    box-shadow:0 12px 35px rgba(0,0,0,0.05);
+}
+
+h1{
+    font-size:52px;
+    line-height:1.15;
+    font-weight:900;
+    margin-bottom:32px;
+    letter-spacing:-2px;
+}
+
+.search-area{
+    display:flex;
+    gap:16px;
+    align-items:center;
+    margin-bottom:28px;
+}
+
+.search-label{
+    font-size:26px;
+    font-weight:800;
+    white-space:nowrap;
+}
+
+.search-box{
+    flex:1;
+    height:58px;
+    border:2px solid #dfe6ef;
+    border-radius:16px;
+    padding:0 20px;
+    font-size:15px;
+    transition:0.2s;
+    outline:none;
+}
+
+.search-box:focus{
+    border-color:#1677ff;
+    box-shadow:0 0 0 5px rgba(22,119,255,0.1);
+}
+
+.search-btn{
+    width:110px;
+    height:58px;
+    border:none;
+    border-radius:16px;
+    background:#1677ff;
+    color:white;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.search-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 18px rgba(22,119,255,0.28);
+}
+
+.search-result-title{
+    font-size:16px;
+    color:#666;
+    margin-bottom:16px;
+    font-weight:700;
+}
+
+.station-list{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    margin-bottom:36px;
+}
+
+.station-chip{
+    padding:10px 14px;
+    border-radius:16px;
+    background:#f3f6fb;
+    color:#333;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    transition:0.18s;
+    border:1px solid transparent;
+}
+
+.station-chip:hover{
+    border-color:#1677ff;
+    color:#1677ff;
+}
+
+.station-chip.active{
+    background:#edf4ff;
+    color:#1677ff;
+}
+
+.station-info{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:22px;
+    gap:20px;
+}
+
+.station-name{
+    font-size:28px;
+    font-weight:900;
+}
+
+.station-id{
+    margin-left:12px;
+    font-size:15px;
+    background:#edf4ff;
+    color:#1677ff;
+    padding:8px 14px;
+    border-radius:999px;
+    font-weight:700;
+}
+
+.time{
+    color:#666;
+    font-size:20px;
+    font-weight:600;
+}
+
+.bus-card{
+    background:#fff;
+    border:1px solid #edf0f5;
+    border-radius:26px;
+    padding:22px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:18px;
+    box-shadow:0 5px 14px rgba(0,0,0,0.03);
+    transition:0.2s;
+}
+
+.bus-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 28px rgba(0,0,0,0.06);
+}
+
+.left{
+    display:flex;
+    align-items:center;
+    gap:18px;
+}
+
+.tag{
+    min-width:72px;
+    text-align:center;
+    padding:12px 18px;
+    border-radius:16px;
+    font-size:18px;
+    font-weight:900;
+}
+
+.normal{
+    background:#dff4ff;
+    color:#0080c7;
+}
+
+.main{
+    background:#e8e4ff;
+    color:#5a4fff;
+}
+
+.route{
+    font-size:34px;
+    font-weight:900;
+}
+
+.route-detail{
+    margin-top:6px;
+    color:#666;
+    font-size:15px;
+}
+
+.arrival{
+    text-align:center;
+}
+
+.arrival-time{
+    color:#1677ff;
+    font-size:30px;
+    font-weight:900;
+}
+
+.arrival-sub{
+    color:#777;
+    margin-top:6px;
+    font-size:15px;
+}
+
+.low-floor{
+    background:#eaf4ff;
+    color:#1677ff;
+    padding:10px 14px;
+    border-radius:15px;
+    font-weight:800;
+    font-size:20px;
+}
+
+.footer-note{
+    margin-top:22px;
+    text-align:center;
+    color:#8a8a8a;
+    font-size:15px;
+    font-weight:600;
+}
+
+@media(max-width:1000px){
+
+    h1{
+        font-size:48px;
+    }
+
+    .search-area{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    .search-label{
+        font-size:15px;
+    }
+
+    .bus-card{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:22px;
+    }
+
+    .station-info{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+}
+
+</style>
+</head>
+<body>
+
+<header>
+    <div class="logo">
+        <div class="logo-icon"></div>
+        <div>전주시 버스정보 시스템</div>
+    </div>
+</header>
+
+<div class="container">
+
+    <div class="hero">
+
+        <h1>전주시 실시간 버스 출도착 정보</h1>
+
+        <div class="search-area">
+
+            <div class="search-label">
+                현재 버스 정류장
+            </div>
+
+            <input
+                class="search-box"
+                id="searchInput"
+                placeholder="정류장 이름 입력"
+                value=""
+            />
+
+            <button class="search-btn" onclick="searchStation()">
+                조회
+            </button>
+
+        </div>
+
+        <div class="search-result-title">
+            검색된 정류장
+        </div>
+
+        <div class="station-list" id="stationList"></div>
+
+        <div class="station-info">
+
+            <div>
+                <span class="station-name">
+                    📍 객사
+                </span>
+
+                <span class="station-id">
+                    정류장 ID : 211000087
+                </span>
+            </div>
+
+            <div class="time" id="timeText">
+                조회 시간 : --:--
+            </div>
+
+        </div>
+
+        <div id="busContainer"></div>
+
+        <div class="footer-note">
+            ⓘ 실시간 정보는 교통 상황에 따라 실제와 다를 수 있습니다.
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+const stationCandidates = [
+
+    {
+        name:'객사',
+        id:'211000087'
+    },
+
+    {
+        name:'전주역',
+        id:'211000412'
+    },
+
+    {
+        name:'금암광장',
+        id:'211000231'
+    },
+
+    {
+        name:'시외버스터미널',
+        id:'211000155'
+    },
+
+    {
+        name:'한옥마을',
+        id:'211000521'
+    },
+
+    {
+        name:'서신동주민센터',
+        id:'211000318'
+    },
+
+    {
+        name:'혁신도시',
+        id:'211000777'
+    },
+
+    {
+        name:'평화동종점',
+        id:'211000622'
+    },
+
+    {
+        name:'송천동종점',
+        id:'211000451'
+    },
+
+    {
+        name:'아중리',
+        id:'211000284'
+    },
+
+    {
+        name:'효자동',
+        id:'211000391'
+    },
+
+    {
+        name:'전북대학교병원',
+        id:'211000902'
+    },
+
+    {
+        name:'전북대학교',
+        id:'211000114'
+    },
+
+    {
+        name:'전북특별자치도청',
+        id:'211000731'
+    },
+
+    {
+        name:'전동성당',
+        id:'211000045'
+    },
+
+    {
+        name:'중앙시장',
+        id:'211000066'
+    },
+
+    {
+        name:'모래내시장',
+        id:'211000109'
+    },
+
+    {
+        name:'전주대학교',
+        id:'211000510'
+    },
+
+    {
+        name:'전주비전대학교',
+        id:'211000520'
+    },
+
+    {
+        name:'삼천막걸리골목',
+        id:'211000845'
+    },
+
+    {
+        name:'예수병원',
+        id:'211000145'
+    },
+
+    {
+        name:'전주시청',
+        id:'211000101'
+    },
+
+    {
+        name:'호남제일고',
+        id:'211000904'
+    },
+
+    {
+        name:'에코시티',
+        id:'211000963'
+    },
+
+    {
+        name:'전주동물원',
+        id:'211000777'
+    },
+
+    {
+        name:'국립전주박물관',
+        id:'211000661'
+    },
+
+    {
+        name:'전주월드컵경기장',
+        id:'211000808'
+    }
+
+];
+
+const busData = {
+
+    '객사':[
+        {
+            type:'간선',
+            number:'4000',
+            route:'객사 → 예수병원 → 전주대캠퍼스',
+            time:'3분',
+            distance:'약 1.1km'
+        },
+        {
+            type:'일반',
+            number:'79',
+            route:'객사 → 효천지구 → 금산사',
+            time:'8분',
+            distance:'약 2.8km'
+        },
+        {
+            type:'간선',
+            number:'6001',
+            route:'객사 → 삼천막걸리골목 → 비전대학교',
+            time:'12분',
+            distance:'약 4.2km'
+        }
+    ],
+
+    '전주역':[
+        {
+            type:'간선',
+            number:'2001',
+            route:'전주역 → 에코시티 → 송천동종점',
+            time:'2분',
+            distance:'약 700m'
+        },
+        {
+            type:'일반',
+            number:'165',
+            route:'전주역 → 전동성당 → 전주동물원',
+            time:'10분',
+            distance:'약 3.4km'
+        },
+        {
+            type:'순환',
+            number:'9',
+            route:'전주역 → 백제대로 → 송천동',
+            time:'15분',
+            distance:'약 5.1km'
+        }
+    ],
+
+    '금암광장':[
+        {
+            type:'일반',
+            number:'970',
+            route:'금암광장 → 전동성당 → 모악산',
+            time:'5분',
+            distance:'약 1.5km'
+        },
+        {
+            type:'일반',
+            number:'355',
+            route:'금암광장 → 송천동 → 삼례터미널',
+            time:'11분',
+            distance:'약 4.1km'
+        }
+    ],
+
+    '시외버스터미널':[
+        {
+            type:'간선',
+            number:'5001',
+            route:'터미널 → 전북대 → 전주대캠퍼스',
+            time:'4분',
+            distance:'약 1.0km'
+        },
+        {
+            type:'일반',
+            number:'119',
+            route:'터미널 → 전주역 → 평화동',
+            time:'9분',
+            distance:'약 2.6km'
+        }
+    ],
+
+    '한옥마을':[
+        {
+            type:'일반',
+            number:'999',
+            route:'한옥마을 → 삼천막걸리골목 → 박물관',
+            time:'6분',
+            distance:'약 1.9km'
+        },
+        {
+            type:'간선',
+            number:'6002',
+            route:'한옥마을 → 전주시청 → 비전대학교',
+            time:'14분',
+            distance:'약 5.0km'
+        }
+    ],
+
+    '서신동':[
+        {
+            type:'일반',
+            number:'61',
+            route:'서신동 → 중앙시장 → 비전대학교',
+            time:'3분',
+            distance:'약 800m'
+        },
+        {
+            type:'간선',
+            number:'3001',
+            route:'서신동 → 도청 → 평화동',
+            time:'13분',
+            distance:'약 4.7km'
+        }
+    ],
+
+    '혁신도시':[
+        {
+            type:'간선',
+            number:'3002',
+            route:'혁신도시 → 전주대 → 삼천동',
+            time:'1분',
+            distance:'약 300m'
+        },
+        {
+            type:'일반',
+            number:'200',
+            route:'혁신도시 → 국립연금공단 → 하나로마트',
+            time:'7분',
+            distance:'약 2.5km'
+        }
+    ],
+
+    '평화동':[
+        {
+            type:'간선',
+            number:'1001',
+            route:'평화동 → 중앙시장 → 우석대',
+            time:'4분',
+            distance:'약 1.2km'
+        },
+        {
+            type:'간선',
+            number:'1002',
+            route:'평화동 → 전북대 → 우석대',
+            time:'9분',
+            distance:'약 3.3km'
+        }
+    ],
+
+    '송천동':[
+        {
+            type:'간선',
+            number:'3001',
+            route:'송천동 → 서신동 → 평화동',
+            time:'6분',
+            distance:'약 2.1km'
+        },
+        {
+            type:'순환',
+            number:'9',
+            route:'송천동 → 전북대학교 → 송천동',
+            time:'13분',
+            distance:'약 4.8km'
+        }
+    ],
+
+    '아중리':[
+        {
+            type:'일반',
+            number:'337',
+            route:'아중리 → 전주역 → 우석대',
+            time:'5분',
+            distance:'약 1.7km'
+        },
+        {
+            type:'일반',
+            number:'103-1',
+            route:'아중리 → 전주역 → 송천동',
+            time:'11분',
+            distance:'약 3.6km'
+        }
+    ],
+
+    '효자동':[
+        {
+            type:'간선',
+            number:'6001',
+            route:'효자동 → 객사 → 비전대학교',
+            time:'2분',
+            distance:'약 600m'
+        },
+        {
+            type:'일반',
+            number:'74',
+            route:'효자동 → 혁신도시 → 전북대',
+            time:'8분',
+            distance:'약 2.9km'
+        }
+    ],
+
+    '전북대학교병원':[
+        {
+            type:'간선',
+            number:'2002',
+            route:'전북대병원 → 전주역 → 송천동',
+            time:'3분',
+            distance:'약 1.0km'
+        },
+        {
+            type:'일반',
+            number:'550',
+            route:'전북대병원 → 봉동 → 코아루아파트',
+            time:'10분',
+            distance:'약 3.8km'
+        }
+    ]
+
+,
+
+    '전북대학교':[
+        {
+            type:'간선',
+            number:'5001',
+            route:'전북대학교 → 중앙시장 → 전주대',
+            time:'4분',
+            distance:'약 1.3km'
+        },
+        {
+            type:'일반',
+            number:'165',
+            route:'전북대학교 → 혁신도시 → 전주동물원',
+            time:'9분',
+            distance:'약 3.1km'
+        }
+    ],
+
+    '전북특별자치도청':[
+        {
+            type:'간선',
+            number:'3001',
+            route:'도청 → 송천동 → 평화동',
+            time:'5분',
+            distance:'약 1.7km'
+        },
+        {
+            type:'일반',
+            number:'61',
+            route:'도청 → 중앙시장 → 비전대학교',
+            time:'12분',
+            distance:'약 4.0km'
+        }
+    ],
+
+    '전동성당':[
+        {
+            type:'일반',
+            number:'79',
+            route:'전동성당 → 서부시장 → 금산사',
+            time:'2분',
+            distance:'약 500m'
+        },
+        {
+            type:'간선',
+            number:'1001',
+            route:'전동성당 → 중앙시장 → 우석대',
+            time:'8분',
+            distance:'약 2.2km'
+        }
+    ],
+
+    '중앙시장':[
+        {
+            type:'간선',
+            number:'6002',
+            route:'중앙시장 → 객사 → 비전대학교',
+            time:'1분',
+            distance:'약 250m'
+        },
+        {
+            type:'일반',
+            number:'337',
+            route:'중앙시장 → 전주역 → 우석대',
+            time:'6분',
+            distance:'약 1.8km'
+        }
+    ],
+
+    '모래내시장':[
+        {
+            type:'순환',
+            number:'6',
+            route:'모래내시장 → 전주역 → 전주대학교',
+            time:'7분',
+            distance:'약 2.0km'
+        },
+        {
+            type:'일반',
+            number:'102',
+            route:'모래내시장 → 송천동 → 에코시티',
+            time:'11분',
+            distance:'약 3.5km'
+        }
+    ],
+
+    '전주대학교':[
+        {
+            type:'간선',
+            number:'4000',
+            route:'전주대학교 → 객사 → 예수병원',
+            time:'3분',
+            distance:'약 1.1km'
+        },
+        {
+            type:'일반',
+            number:'108',
+            route:'전주대학교 → 전주역 → 송천동',
+            time:'13분',
+            distance:'약 4.3km'
+        }
+    ],
+
+    '전주비전대학교':[
+        {
+            type:'간선',
+            number:'6001',
+            route:'비전대학교 → 객사 → 전주시청',
+            time:'5분',
+            distance:'약 1.5km'
+        },
+        {
+            type:'일반',
+            number:'220',
+            route:'비전대학교 → 혁신도시 순환',
+            time:'14분',
+            distance:'약 5.2km'
+        }
+    ],
+
+    '삼천막걸리골목':[
+        {
+            type:'일반',
+            number:'74',
+            route:'삼천막걸리골목 → 혁신도시 → 전북대',
+            time:'6분',
+            distance:'약 1.9km'
+        },
+        {
+            type:'간선',
+            number:'6002',
+            route:'삼천막걸리골목 → 객사 → 비전대학교',
+            time:'10분',
+            distance:'약 3.0km'
+        }
+    ],
+
+    '예수병원':[
+        {
+            type:'간선',
+            number:'4000',
+            route:'예수병원 → 객사 → 전주대학교',
+            time:'2분',
+            distance:'약 600m'
+        },
+        {
+            type:'일반',
+            number:'810',
+            route:'예수병원 → 전주역 → 소양',
+            time:'9분',
+            distance:'약 2.7km'
+        }
+    ],
+
+    '전주시청':[
+        {
+            type:'일반',
+            number:'752',
+            route:'전주시청 → 전동성당 → 관촌터미널',
+            time:'8분',
+            distance:'약 2.5km'
+        },
+        {
+            type:'간선',
+            number:'5002',
+            route:'전주시청 → 전북대 → 전주대',
+            time:'14분',
+            distance:'약 5.0km'
+        }
+    ],
+
+    '호남제일고':[
+        {
+            type:'일반',
+            number:'530',
+            route:'호남제일고 → 전주역 → 고산터미널',
+            time:'4분',
+            distance:'약 1.0km'
+        },
+        {
+            type:'간선',
+            number:'6001',
+            route:'호남제일고 → 전주시청 → 비전대학교',
+            time:'12분',
+            distance:'약 4.1km'
+        }
+    ],
+
+    '에코시티':[
+        {
+            type:'간선',
+            number:'2001',
+            route:'에코시티 → 전주역 → 평화동',
+            time:'3분',
+            distance:'약 900m'
+        },
+        {
+            type:'일반',
+            number:'102',
+            route:'에코시티 → 송천동 → 양묘장',
+            time:'9분',
+            distance:'약 3.3km'
+        }
+    ],
+
+    '전주동물원':[
+        {
+            type:'일반',
+            number:'999',
+            route:'전주동물원 → 전주역 → 박물관',
+            time:'7분',
+            distance:'약 2.1km'
+        },
+        {
+            type:'일반',
+            number:'79',
+            route:'전주동물원 → 전동성당 → 금산사',
+            time:'15분',
+            distance:'약 5.5km'
+        }
+    ],
+
+    '국립전주박물관':[
+        {
+            type:'간선',
+            number:'3002',
+            route:'박물관 → 전주대 → 삼천동',
+            time:'4분',
+            distance:'약 1.4km'
+        },
+        {
+            type:'일반',
+            number:'999',
+            route:'박물관 → 삼천막걸리골목 → 동물원',
+            time:'11분',
+            distance:'약 3.7km'
+        }
+    ],
+
+    '전주월드컵경기장':[
+        {
+            type:'일반',
+            number:'420',
+            route:'월드컵경기장 → 중앙시장 → 중인동',
+            time:'5분',
+            distance:'약 1.6km'
+        },
+        {
+            type:'일반',
+            number:'401',
+            route:'월드컵경기장 → 반월동 → 상하보',
+            time:'16분',
+            distance:'약 5.8km'
+        }
+    ]
+
+};
+
+function renderStations(){
+
+    const stationList =
+    document.getElementById('stationList');
+
+    stationList.innerHTML = '';
+
+    stationCandidates.forEach((station,index)=>{
+
+        const div = document.createElement('div');
+
+        div.className =
+        `station-chip ${index === 0 ? 'active' : ''}`;
+
+        div.innerText = station.name;
+
+        div.onclick = ()=>{
+
+            document
+            .querySelectorAll('.station-chip')
+            .forEach(chip=>chip.classList.remove('active'));
+
+            div.classList.add('active');
+
+            document.querySelector('.station-name').innerHTML =
+            `📍 ${station.name}`;
+
+            document.querySelector('.station-id').innerHTML =
+            `정류장 ID : ${station.id}`;
+
+            renderBuses(station.name);
+        };
+
+        stationList.appendChild(div);
+    });
+}
+
+function renderBuses(station='객사'){
+
+    const container =
+    document.getElementById('busContainer');
+
+    container.innerHTML = '';
+
+    const buses = busData[station] || [];
+
+    buses.forEach(bus=>{
+
+        const isMain = bus.type === '간선';
+
+        container.innerHTML += `
+
+        <div class="bus-card">
+
+            <div class="left">
+
+                <div class="tag ${isMain ? 'main' : 'normal'}">
+                    ${bus.type}
+                </div>
+
+                <div>
+                    <div class="route">
+                        ${bus.number}
+                    </div>
+
+                    <div class="route-detail">
+                        ${bus.route}
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="arrival">
+                <div class="arrival-time">
+                    ${bus.time}
+                </div>
+
+                <div class="arrival-sub">
+                    ${bus.distance}
+                </div>
+            </div>
+
+            <div class="low-floor">
+                저상
+            </div>
+
+        </div>
+
+        `;
+    });
+}
+
+
+function updateTime(){
+
+    const now = new Date();
+
+    const text =
+    `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+
+    document.getElementById('timeText').innerText =
+    `조회 시간 : ${text}`;
+}
+
+function searchStation(){
+
+    const value =
+    document.getElementById('searchInput').value.trim();
+
+    if(!value){
+
+        alert('정류장을 입력하세요.');
+        return;
+    }
+
+    updateTime();
+
+    const foundStation = stationCandidates.find(station =>
+        station.name.includes(value)
+    );
+
+    if(foundStation){
+
+        document.querySelector('.station-name').innerHTML =
+        `📍 ${foundStation.name}`;
+
+        document.querySelector('.station-id').innerHTML =
+        `정류장 ID : ${foundStation.id}`;
+
+        document
+        .querySelectorAll('.station-chip')
+        .forEach(chip=>chip.classList.remove('active'));
+
+        const chips =
+        document.querySelectorAll('.station-chip');
+
+        stationCandidates.forEach((station,index)=>{
+
+            if(station.name === foundStation.name){
+                chips[index].classList.add('active');
+            }
+        });
+
+        renderBuses(foundStation.name);
+
+    }else{
+
+        document.querySelector('.station-name').innerHTML =
+        `📍 ${value}`;
+
+        document.querySelector('.station-id').innerHTML =
+        `정류장 ID : 정보 없음`;
+
+        const container =
+        document.getElementById('busContainer');
+
+        container.innerHTML = `
+
+        <div style="padding:40px; text-align:center; color:#777; font-size:24px; font-weight:700;">
+            검색된 정류장 정보가 없습니다.
+        </div>
+
+        `;
+    }
+}
+
+renderStations();
+renderBuses();
+updateTime();
+
+setInterval(updateTime,1000);
+
+</script>
+
+</body>
+</html>
