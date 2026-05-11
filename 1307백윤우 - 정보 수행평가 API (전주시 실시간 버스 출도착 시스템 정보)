@@ -303,7 +303,7 @@ h1{
 <header>
     <div class="logo">
         <div class="logo-icon"></div>
-        <div>전주시 버스정보 시스템</div>
+        <div>전주시 버스정보 시스템 [1307백윤우]</div>
     </div>
 </header>
 
@@ -311,7 +311,7 @@ h1{
 
     <div class="hero">
 
-        <h1>전주시 실시간 버스 출도착 정보</h1>
+        <h1>전주시 실시간 버스 출도착 정보 [1307백윤우]</h1>
 
         <div class="search-area">
 
